@@ -1,0 +1,26 @@
+name: Pipeline de Testes Continuos
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  testar-aplicacao:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar codigo do repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar o Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-node: 18
+
+    - name: Instalar Dependencias
+      run: npm install
+
+    - name: Executar os Testes Automatizados
+      run: npm test -- --coverage
