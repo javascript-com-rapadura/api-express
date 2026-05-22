@@ -12,7 +12,10 @@ const initialUsuarios = [
 const initialPedidos = [
   { id: 1, usuarioId: 1, valorFinal: 85.00, status: "APROVADO" },
   { id: 2, usuarioId: 2, valorFinal: 105.00, status: "APROVADO" },
-  { id: 3, usuarioId: 99, valorFinal: 30.00, status: "APROVADO" }
+  { id: 3, usuarioId: 99, valorFinal: 30.00, status: "APROVADO" },
+  { id: 4, usuarioId: 1, valorFinal: 10.00, status: "APROVADO" },
+  { id: 5, usuarioId: 2, valorFinal: 100.00, status: "APROVADO" },
+  { id: 6, usuarioId: 3, valorFinal: 300.00, status: "REPROVADO" },
 ];
 
 let usuarios = [...initialUsuarios];
