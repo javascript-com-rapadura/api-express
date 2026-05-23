@@ -1,5 +1,5 @@
 const express = require('express');
-const axios = require('axios');
+const { calcularDesconto, calcularFrete, debitarSaldo } = require('./services/pedidoService');
 const app = express();
 app.use(express.json());
 
@@ -42,40 +42,23 @@ app.post('/pedidos', async (req, res) => {
     return res.status(404).json({ erro: "Usuário não encontrado" });
   }
 
-  let valorFinal = valorTotal;
-  if (usuario.tipo === "VIP") {
-    valorFinal = valorTotal * 0.90;
-    valorFinal = valorFinal - 50;
-  }
-
+  let valorFinal = calcularDesconto(usuario.tipo, valorTotal);
 
   try {
-    const response = await axios.get(`https://viacep.com.br/ws/${cepDestino}/json/`);
-
-    if (response.data.erro) {
+    const frete = await calcularFrete(cepDestino);
+    valorFinal += frete;
+  } catch (error) {
+    if (error.message === "CEP_INVALIDO") {
       return res.status(400).json({ erro: "CEP inválido" });
     }
-
-    let frete = 20;
-    if (response.data.uf === "SP") {
-      frete = 5;
-    }
-
-    if (response.data.uf === "CE") {
-      frete = 40;
-    }
-
-    valorFinal += frete;
-
-  } catch (error) {
     return res.status(500).json({ erro: "Erro ao calcular frete externo" });
   }
 
-  if (usuario.saldo < valorFinal) {
+  try {
+    debitarSaldo(usuario, valorFinal);
+  } catch (error) {
     return res.status(400).json({ erro: "Saldo insuficiente" });
   }
-
-  usuario.saldo -= valorFinal;
 
   const novoPedido = {
     id: pedidos.length + 1,
